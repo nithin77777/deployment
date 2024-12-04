@@ -2,3 +2,4 @@ migrations/
 __pycache__/
 .python-version
 venv/
+version-notes.*

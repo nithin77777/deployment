@@ -5,8 +5,8 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser
-from .serializers import CustomUserSerializer
+from .models import Employee
+from .serializers import EmployeeSerializer
 
 class UserCRUSView(APIView):
     """
@@ -19,17 +19,17 @@ class UserCRUSView(APIView):
         """
         query = request.query_params.get('username', None)
         if query:
-            users = CustomUser.objects.filter(username__icontains=query)
+            users = Employee.objects.filter(username__icontains=query)
         else:
-            users = CustomUser.objects.all()
-        serializer = CustomUserSerializer(users, many=True)
+            users = Employee.objects.all()
+        serializer = EmployeeSerializer(users, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         """
         Create a new user.
         """
-        serializer = CustomUserSerializer(data=request.data)
+        serializer = EmployeeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -40,11 +40,11 @@ class UserCRUSView(APIView):
         Update an existing user. Requires the user ID (pk) in the request.
         """
         try:
-            user = CustomUser.objects.get(pk=pk)
-        except CustomUser.DoesNotExist:
+            user = Employee.objects.get(pk=pk)
+        except Employee.DoesNotExist:
             return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = CustomUserSerializer(user, data=request.data, partial=True)
+        serializer = EmployeeSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

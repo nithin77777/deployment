@@ -13,17 +13,23 @@ class UserCRUSView(APIView):
     View to perform Create, Retrieve, Update, and Search operations on CustomUser.
     """
 
-    def get(self, request):
+    def get(self, request, pk=None):
         """
         Retrieve or search users. If a query parameter (e.g., username) is provided, perform a search.
         """
-        query = request.query_params.get('username', None)
-        if query:
-            users = Employee.objects.filter(username__icontains=query)
+        # query = request.query_params.get('username', None)
+        if pk:
+            try:
+                user = Employee.objects.get(pk=pk)
+                serializer = EmployeeSerializer(user)
+                return Response(serializer.data)
+            except Employee.DoesNotExist:
+                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         else:
+            # Handle the case where no pk is provided, e.g., retrieve all users
             users = Employee.objects.all()
-        serializer = EmployeeSerializer(users, many=True)
-        return Response(serializer.data)
+            serializer = EmployeeSerializer(users, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         """
